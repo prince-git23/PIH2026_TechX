@@ -1,0 +1,275 @@
+:root {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+
+    --bg-main: #f6f7fb;
+    --bg-card: #ffffff;
+    --border: #e5e7eb;
+
+    --text-main: #111827;
+    --text-muted: #6b7280;
+
+    --primary: #111111;
+    --success: #059669;
+    --danger: #dc2626;
+}
+
+/* ================= BODY ================= */
+
+body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    opacity: 0;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    min-height: 100vh;
+    background-color: #0f172a; /* fallback */
+    overflow-x: hidden;
+}
+
+/* Background Image Layer */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("assets/bg.png") center/cover no-repeat;
+    opacity: 0.25; /* adjust this value */
+    z-index: -2;
+}
+
+/* Dark Overlay Layer (for better readability) */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        rgba(15, 23, 42, 0.85),
+        rgba(15, 23, 42, 0.85)
+    );
+    z-index: -1;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* ================= NAVBAR ================= */
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 4rem;
+    background: white;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand img {
+    height: 28px;
+}
+
+.brand span {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a[aria-current="page"] {
+    color: var(--text-main);
+}
+
+.top-nav .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+
+/* ================= PANELS ================= */
+
+.feed-panel,
+.connections-panel,
+.messages-panel,
+.policy-card,
+.profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+/* ================= HEADINGS ================= */
+
+h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+}
+
+p {
+    color: var(--text-muted);
+}
+
+/* ================= CARDS ================= */
+
+.card,
+.feed-item,
+.connection-card,
+.message-thread,
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: 0.25s ease;
+}
+
+.feed-item:hover,
+.connection-card:hover,
+.message-thread:hover,
+.metric-card:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+/* ================= META TEXT ================= */
+
+.feed-meta,
+.connection-meta,
+.message-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+    border-radius: 8px;
+    padding: 0.65rem 1.4rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: rgb(255, 255, 255);
+    border-color: var(--primary);
+}
+
+.btn.primary:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.btn.secondary:hover {
+    background: #f3f4f6;
+}
+
+/* ================= BADGES ================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge.accepted {
+    background: rgba(5, 150, 105, 0.1);
+    color: var(--success);
+}
+
+.badge.pending {
+    background: rgba(234, 179, 8, 0.1);
+    color: #ca8a04;
+}
+
+.badge.rejected {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--danger);
+}
+
+/* ================= METRICS ================= */
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card h3 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+/* ================= FORMS ================= */
+
+input,
+select,
+textarea {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+    .page-body,
+    .form-shell {
+        grid-template-columns: 1fr;
+    }
+}
+/*=================image=================*/
+.policy-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dbeafe, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid #e0f2fe;
+}
+
+.policy-circle img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
