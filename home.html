@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ur">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FeedLink | Feed</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="brand">
+            <img src="assets/images/brand-logo.svg" alt="Feedlink Logo" />
+            <span>Feedlink / Annsetu</span>
+        </div>
+        <div class="nav-links">
+            <a href="home.html" aria-current="page">Feed</a>
+            <a href="connections.html">Connections</a>
+            <a href="messages.html">Messages</a>
+            <a href="profile.html">Profile</a>
+            <a href="index.html">Logout</a>
+        </div>
+        <button id="themeToggle" class="btn secondary">🌙</button>
+    </nav>
+
+    <main class="page-body">
+        <section class="metrics">
+            <div class="metric-card">
+                <h3 id="totalMeals">0</h3>
+                <p>Total Meals Shared</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="activePartners">0</h3>
+                <p>Active Partners</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="successRate">0%</h3>
+                <p>Success Rate</p>
+            </div>
+        </section>
+        <section class="feed-panel">
+            <header>
+                <h1>Feed</h1>
+                <p>Hostels/hotels/lawns seeking to donate leftover food and NGOs ready to receive it.</p>
+            </header>
+            <div id="feedContainer" class="feed-list" aria-live="polite"></div>
+        </section>
+
+        <aside class="policy-card">
+            <h2>Social media and government support</h2>
+            <p>
+                Opportunities for income and government subsidies through sponsors' social views after each accepted
+                donation.
+            </p>
+            <ul>
+                <li>Recycle empty or labor-intensive food</li>
+                <li>Earn from ads on GetoView</li>
+                <li>Safe delivery, according to the given location</li>
+            </ul>
+        </aside>
+    </main>
+
+    <script type="module" src="js/feed.js"></script>
+</body>
+
+</html>
