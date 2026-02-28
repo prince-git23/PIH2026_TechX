@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annsetu | Premium Access</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#6366f1;
+    --accent:#8b5cf6;
+    --bg:#0f172a;
+    --card:rgba(255,255,255,0.06);
+    --border:rgba(255,255,255,0.1);
+    --text:#f8fafc;
+    --muted:#94a3b8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2rem;
+    padding:2rem;
+}
+
+.hero{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.hero h1{
+    font-size:3rem;
+    font-weight:800;
+    background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    -webkit-background-clip:text;
+    color:transparent;
+    margin-bottom:1rem;
+}
+
+.hero p{
+    color:var(--muted);
+    font-size:1.1rem;
+    line-height:1.6;
+}
+
+.card{
+    background:var(--card);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:2rem;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+
+.tabs{
+    display:flex;
+    margin-bottom:1.5rem;
+}
+
+.tabs button{
+    flex:1;
+    padding:0.8rem;
+    border:none;
+    background:none;
+    color:var(--muted);
+    font-weight:600;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+}
+
+.tabs button.active{
+    color:white;
+    border-color:var(--primary);
+}
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+}
+
+input,select{
+    padding:0.9rem;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.05);
+    color:white;
+    font-size:0.95rem;
+}
+
+input:focus,select:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+button.submit{
+    margin-top:0.5rem;
+    padding:0.9rem;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button.submit:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 30px rgba(99,102,241,0.4);
+}
+
+.form-message{
+    font-size:0.9rem;
+    min-height:20px;
+}
+
+.guest{
+    text-align:center;
+    margin-top:1rem;
+}
+
+.guest a{
+    color:var(--primary);
+    text-decoration:none;
+    font-weight:600;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:900px){
+    .container{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="hero">
+        <h1>Annsetu</h1>
+        <p>
+            Premium food donation network connecting hostels, hotels,
+            lawns and NGOs with verified partnerships, secure messaging,
+            and government-supported sponsorship visibility.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <button id="loginTab" class="active">Login</button>
+            <button id="registerTab">Register</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+            <input type="text" id="loginName" placeholder="Full Name" required>
+            <input type="email" id="loginEmail" placeholder="Email Address" required>
+            <select id="loginRole" required>
+                <option value="">Select Role</option>
+                <option value="sender">Sender</option>
+                <option value="receiver">Receiver</option>
+            </select>
+            <button type="submit" class="submit">Login</button>
+            <p id="loginAlert" class="form-message"></p>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="registerForm" class="hidden">
+            <input type="text" id="registerName" placeholder="Full Name" required>
+            <input type="email" id="registerEmail" placeholder="Email Address" required>
+            <input type="text" id="registerLocation" placeholder="Location" required>
+            <select id="registerType" required>
+                <option value="">Organization Type</option>
+                <option value="hostel">Hostel</option>
+                <option value="hotel">Hotel</option>
+                <option value="ngo">NGO</option>
+                <option value="lawn">Lawn</option>
+            </select>
+            <button type="submit" class="submit">Create Account</button>
+            <p id="registerAlert" class="form-message"></p>
+        </form>
+
+        <div class="guest">
+            <a href="#" id="guestLink">Continue as Guest</a>
+        </div>
+
+    </div>
+</div>
+
+<script type="module" src="js/auth.js"></script>
+
+<script>
+const loginTab=document.getElementById("loginTab");
+const registerTab=document.getElementById("registerTab");
+const loginForm=document.getElementById("loginForm");
+const registerForm=document.getElementById("registerForm");
+
+loginTab.addEventListener("click",()=>{
+    loginTab.classList.add("active");
+    registerTab.classList.remove("active");
+    loginForm.classList.remove("hidden");
+    registerForm.classList.add("hidden");
+});
+
+registerTab.addEventListener("click",()=>{
+    registerTab.classList.add("active");
+    loginTab.classList.remove("active");
+    registerForm.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+});
+</script>
+
+</body>
+</html>
