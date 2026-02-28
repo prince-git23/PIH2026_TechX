@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FeedLink | Messages</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#6366f1;
+    --accent:#8b5cf6;
+    --bg:#0f172a;
+    --card:rgba(255,255,255,0.06);
+    --border:rgba(255,255,255,0.1);
+    --text:#f8fafc;
+    --muted:#94a3b8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:var(--text);
+    min-height:100vh;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    min-height: 100vh;
+    background-color: #0f172a; /* fallback */
+    overflow-x: hidden;
+}
+
+/* Background Image Layer */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("assets/bg.png") center/cover no-repeat;
+    opacity: 1; /* adjust this value */
+    z-index: -2;
+}
+
+/* Dark Overlay Layer (for better readability) */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        rgba(15, 23, 42, 0.85),
+        rgba(15, 23, 42, 0.85)
+    );
+    z-index: -1;
+}
+
+/* NAVBAR */
+.top-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1.2rem 3rem;
+    border-bottom:1px solid var(--border);
+    background:rgba(255,255,255,0.03);
+    backdrop-filter:blur(12px);
+}
+
+.brand{
+    font-weight:700;
+    font-size:1.2rem;
+}
+
+.nav-links{
+    display:flex;
+    gap:2rem;
+}
+
+.nav-links a{
+    text-decoration:none;
+    color:var(--muted);
+    font-weight:500;
+    transition:0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a[aria-current="page"]{
+    color:white;
+}
+
+.btn{
+    padding:0.6rem 1.2rem;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn.primary{
+    background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    border:none;
+}
+
+.btn.primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 30px rgba(99,102,241,0.4);
+}
+
+/* PAGE LAYOUT */
+.page-body{
+    max-width:1200px;
+    margin:auto;
+    padding:3rem 2rem;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:2rem;
+}
+
+/* MESSAGE PANEL */
+.messages-panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:2rem;
+    backdrop-filter:blur(20px);
+}
+
+.messages-panel h1{
+    margin-bottom:0.5rem;
+}
+
+/* THREAD LIST */
+.message-list{
+    margin-top:1.5rem;
+}
+
+.message-thread{
+    padding:1.2rem;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.04);
+    margin-bottom:1rem;
+    transition:0.3s;
+}
+
+.message-thread:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 30px rgba(0,0,0,0.4);
+}
+
+.message-meta{
+    margin-top:0.5rem;
+    font-size:0.8rem;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+}
+
+/* MESSAGE FORM */
+.message-form{
+    margin-top:2rem;
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+}
+
+.message-form input,
+.message-form textarea{
+    padding:0.9rem;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.05);
+    color:white;
+    font-size:0.95rem;
+}
+
+.message-form input:focus,
+.message-form textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+.form-message{
+    font-size:0.9rem;
+    min-height:20px;
+}
+
+/* POLICY CARD */
+.policy-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:2rem;
+    backdrop-filter:blur(20px);
+}
+
+.policy-card ul{
+    margin-top:1rem;
+    padding-left:1rem;
+    color:var(--muted);
+}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+    .page-body{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="top-nav">
+    <div class="brand">Annsetu</div>
+    <div class="nav-links">
+        <a href="home.html">Feed</a>
+        <a href="connections.html">Connections</a>
+        <a href="messages.html" aria-current="page">Messages</a>
+        <a href="profile.html">Profile</a>
+        <a href="index.html">Logout</a>
+    </div>
+</nav>
+
+<main class="page-body">
+
+    <section class="messages-panel">
+        <header>
+            <h1>Secure Messages</h1>
+            <p>Coordinate pickups, confirmations, and delivery timing.</p>
+        </header>
+
+        <div id="messageThreads" class="message-list"></div>
+
+        <form id="messageForm" class="message-form" novalidate>
+            <input type="text" id="messageRecipient" placeholder="Receiver or Sender Name" required>
+            <textarea id="messageContent" rows="3" maxlength="500" placeholder="Type your message..." required></textarea>
+            <button type="submit" class="btn primary">Send Message</button>
+            <p id="messageAlert" class="form-message"></p>
+        </form>
+    </section>
+
+    <aside class="policy-card">
+        <h2>Ownership & Traceability</h2>
+        <p>
+            All communication logs align with donation records to ensure
+            accountability and compliance tracking.
+        </p>
+        <ul>
+            <li>Thread history saved locally</li>
+            <li>Time-stamped communication</li>
+            <li>Secure NGO & donor coordination</li>
+        </ul>
+        
+        <div class="policy-circle">
+            <img src="assets/traceability-blue.png" alt="Ownership and traceability">
+        </div>
+    </aside>
+
+</main>
+
+<script type="module" src="js/messages.js"></script>
+
+</body>
+</html>

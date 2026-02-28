@@ -1,0 +1,21 @@
+{
+  "name": "feedlink-annsetu",
+  "version": "1.0.0",
+  "description": "Feedlink / Annsetu connects hostels, hotels, lawns, and NGOs to distribute leftover food while rewarding sponsors through social media engagement and government policy support.",
+  "private": true,
+  "scripts": {
+    "start": "live-server --port=3000 --entry-file=index.html",
+    "lint:css": "stylelint \"css/**/*.css\"",
+    "lint:js": "eslint js/**/*.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "live-server": "^1.2.4",
+    "stylelint": "^15.0.0",
+    "stylelint-config-standard": "^34.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
