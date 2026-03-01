@@ -3,34 +3,25 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-/* ================= LOAD ENV ================= */
 dotenv.config();
 
-/* ================= CREATE APP ================= */
 const app = express();
 
 /* ================= MIDDLEWARE ================= */
 
-// CORS (Allow all for now – restrict in production)
 app.use(cors({
   origin: "*",
   credentials: true
 }));
 
-// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ================= DATABASE CONNECTION ================= */
+/* ================= ROOT ROUTE FIRST ================= */
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected Successfully");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    process.exit(1);
-  });
+app.get("/", (req, res) => {
+  res.send("🚀 Annsetu Backend Running...");
+});
 
 /* ================= ROUTES ================= */
 
@@ -40,24 +31,20 @@ app.use("/api/messages", require("./routes/messageRoutes"));
 app.use("/api/connections", require("./routes/connectionRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 
-/* ================= ROOT ROUTE ================= */
-
-app.get("/", (req, res) => {
-  res.send("🚀 Annsetu Backend Running...");
-});
-
-/* ================= 404 HANDLER ================= */
+/* ================= 404 HANDLER (LAST) ================= */
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-/* ================= GLOBAL ERROR HANDLER ================= */
+/* ================= DATABASE CONNECTION ================= */
 
-app.use((err, req, res, next) => {
-  console.error("🔥 Server Error:", err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected Successfully"))
+  .catch(err => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1);
+  });
 
 /* ================= START SERVER ================= */
 
