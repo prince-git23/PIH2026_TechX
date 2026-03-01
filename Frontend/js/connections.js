@@ -1,4 +1,4 @@
-const BASE_URL = "https://pih2026-techx.onrender.com/";
+const BASE_URL = "https://pih2026-techx.onrender.com/api";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
