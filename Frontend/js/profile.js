@@ -1,55 +1,83 @@
-const profileForm = document.getElementById("profileForm");
-const profileAlert = document.getElementById("profileAlert");
+const API = "http://localhost:5000/api";
+const token = localStorage.getItem("token");
+const userId = localStorage.getItem("userId");
 
-const loadProfile = () => {
-    const auth = JSON.parse(sessionStorage.getItem("annsetu-auth"));
-    if (!auth) return;
-    document.getElementById("profileName").value = auth.name || "";
-    document.getElementById("profileEmail").value = auth.email || "";
-    document.getElementById("profileLocation").value = auth.location || "";
-    document.getElementById("profileType").value = auth.type || "";
-};
+document.addEventListener("DOMContentLoaded", initProfile);
 
-const toggle = document.getElementById("themeToggle");
-
-
-
-const notify = (message, success = true) => {
-    profileAlert.textContent = message;
-    profileAlert.style.color = success ? "var(--primary)" : "var(--accent)";
-};
-
-const persistProfile = (payload) => {
-    sessionStorage.setItem("annsetu-auth", JSON.stringify(payload));
-};
-
-const handleProfileSave = (event) => {
-    event.preventDefault();
-    const name = document.getElementById("profileName").value.trim();
-    const email = document.getElementById("profileEmail").value.trim().toLowerCase();
-    const location = document.getElementById("profileLocation").value.trim();
-    const type = document.getElementById("profileType").value;
-    const categories = document.getElementById("profileCategories").value.trim();
-    const socials = document.getElementById("profileSocial").value.trim();
+async function initProfile() {
+    if (!token) {
+        alert("Please login first");
+        window.location.href = "index.html";
+        return;
+    }
 
     try {
-        if (!name || !email || !location || !type) {
-            throw new Error("Required fields cannot be omitted.");
+        // ================= LOAD USER =================
+        const resUser = await fetch(`${API}/users/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const user = await resUser.json();
+
+        document.getElementById("premiumProfileName").textContent = user.name;
+        document.getElementById("premiumRole").textContent = user.role.toUpperCase();
+
+        if (user.verified) {
+            const badge = document.getElementById("verificationBadge");
+            badge.textContent = user.verificationLevel.toUpperCase();
+            badge.classList.remove("unverified");
+            badge.classList.add("verified");
         }
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            throw new Error("Please enter a valid email.");
-        }
+        // ================= LOAD FEEDS =================
+        const resFeeds = await fetch(`${API}/feed`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
 
-        persistProfile({ name, email, location, type, categories, socials });
-        notify("Profile has been successfully saved.");
-    } catch (error) {
-        notify(error.message, false);
+        const feeds = await resFeeds.json();
+
+        const myFeeds = feeds.filter(f => f.sender._id === userId);
+
+        const total = myFeeds.length;
+        const accepted = myFeeds.filter(f => f.status === "accepted").length;
+        const meals = myFeeds.reduce((sum, f) => sum + f.quantity, 0);
+        const success = total ? Math.round((accepted / total) * 100) : 0;
+        const reputation = accepted * 10;
+
+        animateNumber("totalDonations", total);
+        animateNumber("acceptedDonations", accepted);
+        animateNumber("mealsServed", meals);
+        animateNumber("reputationScore", reputation);
+
+        document.getElementById("successRate").textContent = success + "%";
+        document.getElementById("trustProgress").style.width = success + "%";
+
+        // ================= ACTIVITY =================
+        const activity = document.getElementById("activityList");
+        activity.innerHTML = "";
+
+        myFeeds.slice(0, 5).forEach(feed => {
+            const li = document.createElement("li");
+            li.textContent = `Donation "${feed.title}" → ${feed.status}`;
+            activity.appendChild(li);
+        });
+
+    } catch (err) {
+        console.error(err);
     }
-};
-
-if (profileForm) {
-    profileForm.addEventListener("submit", handleProfileSave);
 }
 
-document.addEventListener("DOMContentLoaded", loadProfile);
+function animateNumber(id, value) {
+    const el = document.getElementById(id);
+    let current = 0;
+    const step = Math.ceil(value / 20);
+
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= value) {
+            current = value;
+            clearInterval(timer);
+        }
+        el.textContent = current;
+    }, 30);
+}
