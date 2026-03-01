@@ -1,30 +1,23 @@
-const BASE_URL = "https://pih2026-techx.onrender.com/api";
-const token = localStorage.getItem("token");
+
+const BASE_URL = "https://pih2026-techx.onrender.com/api/feed";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+  const token = localStorage.getItem("token");
   const feedId = localStorage.getItem("selectedFeedId");
 
-  if (!token) {
-    alert("Please login first");
-    window.location.href = "index.html";
-    return;
-  }
-
-  if (!feedId) {
-    console.log("No feed selected");
+  if (!token || !feedId) {
+    console.log("Missing token or feed ID");
     return;
   }
 
   try {
-    // ✅ FIXED → call /feed
-    const res = await fetch(`${BASE_URL}/feed`, {
+
+    const res = await fetch(`${BASE_URL}`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        "Authorization": `Bearer ${token}`
       }
     });
-
-    if (!res.ok) throw new Error("Failed to load feeds");
 
     const feeds = await res.json();
     const feed = feeds.find(f => f._id === feedId);
@@ -37,14 +30,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderFeedDetails(feed);
 
   } catch (error) {
-    console.error("Load Error:", error);
+    console.error(error);
   }
+
 });
 
 
-/* =========================================================
-   RENDER FEED
-========================================================= */
 function renderFeedDetails(feed) {
 
   const container = document.querySelector(".connections-container");
@@ -56,22 +47,20 @@ function renderFeedDetails(feed) {
 
       <div class="feed-meta">
         👤 ${feed.sender?.name || "Unknown Sender"}
-        📍 ${feed.location || ""}
-        🍽 ${feed.quantity || 0} meals
+        📍 ${feed.location}
+        🍽 ${feed.quantity} meals
         ${feed.pickupTime ? `⏰ ${feed.pickupTime}` : ""}
       </div>
 
-      <p>${feed.description || ""}</p>
+      <p>${feed.description}</p>
 
       <div class="feed-actions" style="margin-top:15px; display:flex; gap:12px;">
-        ${feed.status === "pending" ? `
-          <button class="btn primary" id="acceptBtn">Accept</button>
-          <button class="btn secondary" id="rejectBtn">Reject</button>
-        ` : `
-          <div style="font-weight:600; color:${feed.status === "accepted" ? "#22c55e" : "#ef4444"};">
-            Status: ${feed.status.toUpperCase()}
-          </div>
-        `}
+        <button class="btn primary" id="acceptBtn">
+          Accept
+        </button>
+        <button class="btn secondary" id="rejectBtn">
+          Reject
+        </button>
       </div>
 
       <div id="statusLog" style="margin-top:15px;"></div>
@@ -79,29 +68,26 @@ function renderFeedDetails(feed) {
     </div>
   `;
 
-  if (feed.status === "pending") {
-    document.getElementById("acceptBtn")
-      ?.addEventListener("click", () => updateStatus(feed._id, "accepted"));
+  // Attach events AFTER rendering
+  document.getElementById("acceptBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "accepted"));
 
-    document.getElementById("rejectBtn")
-      ?.addEventListener("click", () => updateStatus(feed._id, "rejected"));
-  }
+  document.getElementById("rejectBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "rejected"));
 }
 
 
-/* =========================================================
-   UPDATE STATUS
-========================================================= */
 async function updateStatus(feedId, status) {
+
+  const token = localStorage.getItem("token");
 
   try {
 
-    // ✅ FIXED → call /feed/:id/status
-    const res = await fetch(`${BASE_URL}/feed/${feedId}/status`, {
+    const res = await fetch(`${BASE_URL}/${feedId}/status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({ status })
     });
@@ -114,15 +100,12 @@ async function updateStatus(feedId, status) {
     }
 
     document.getElementById("statusLog").innerHTML = `
-      <div style="color:${status === "accepted" ? "#22c55e" : "#ef4444"}; font-weight:600;">
+      <div style="color:${status === "accepted" ? "#22c55e" : "#ef4444"};">
         ✔ Feed ${status}
       </div>
     `;
 
-    // Reload after update
-    setTimeout(() => location.reload(), 1000);
-
   } catch (error) {
-    console.error("Update Error:", error);
+    console.error(error);
   }
 }
