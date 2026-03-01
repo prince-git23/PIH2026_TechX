@@ -1,10 +1,11 @@
 const API = "https://pih2026-techx.onrender.com/api";
-const token = localStorage.getItem("token");
-const userId = localStorage.getItem("userId");
 
 document.addEventListener("DOMContentLoaded", initProfile);
 
 async function initProfile() {
+
+    const token = localStorage.getItem("token");
+
     if (!token) {
         alert("Please login first");
         window.location.href = "index.html";
@@ -12,35 +13,52 @@ async function initProfile() {
     }
 
     try {
-        // ================= LOAD USER =================
+
+        /* ================= LOAD USER ================= */
+
         const resUser = await fetch(`${API}/users/me`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
+        if (!resUser.ok) {
+            throw new Error("Failed to load user");
+        }
+
         const user = await resUser.json();
 
-        document.getElementById("premiumProfileName").textContent = user.name;
-        document.getElementById("premiumRole").textContent = user.role.toUpperCase();
+        // Save userId properly (FIX)
+        const userId = user._id;
+
+        document.getElementById("premiumProfileName").textContent = user.name || "User";
+        document.getElementById("premiumRole").textContent = (user.role || "").toUpperCase();
 
         if (user.verified) {
             const badge = document.getElementById("verificationBadge");
-            badge.textContent = user.verificationLevel.toUpperCase();
-            badge.classList.remove("unverified");
-            badge.classList.add("verified");
+            if (badge) {
+                badge.textContent = (user.verificationLevel || "verified").toUpperCase();
+                badge.classList.remove("unverified");
+                badge.classList.add("verified");
+            }
         }
 
-        // ================= LOAD FEEDS =================
+        /* ================= LOAD FEEDS ================= */
+
         const resFeeds = await fetch(`${API}/feed`, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
+        if (!resFeeds.ok) {
+            throw new Error("Failed to load feeds");
+        }
+
         const feeds = await resFeeds.json();
 
-        const myFeeds = feeds.filter(f => f.sender._id === userId);
+        // FIXED filter
+        const myFeeds = feeds.filter(f => f.sender?._id === userId);
 
         const total = myFeeds.length;
         const accepted = myFeeds.filter(f => f.status === "accepted").length;
-        const meals = myFeeds.reduce((sum, f) => sum + f.quantity, 0);
+        const meals = myFeeds.reduce((sum, f) => sum + (f.quantity || 0), 0);
         const success = total ? Math.round((accepted / total) * 100) : 0;
         const reputation = accepted * 10;
 
@@ -49,28 +67,44 @@ async function initProfile() {
         animateNumber("mealsServed", meals);
         animateNumber("reputationScore", reputation);
 
-        document.getElementById("successRate").textContent = success + "%";
-        document.getElementById("trustProgress").style.width = success + "%";
+        const successEl = document.getElementById("successRate");
+        if (successEl) successEl.textContent = success + "%";
 
-        // ================= ACTIVITY =================
+        const trustBar = document.getElementById("trustProgress");
+        if (trustBar) trustBar.style.width = success + "%";
+
+        /* ================= ACTIVITY ================= */
+
         const activity = document.getElementById("activityList");
-        activity.innerHTML = "";
+        if (activity) {
+            activity.innerHTML = "";
 
-        myFeeds.slice(0, 5).forEach(feed => {
-            const li = document.createElement("li");
-            li.textContent = `Donation "${feed.title}" → ${feed.status}`;
-            activity.appendChild(li);
-        });
+            if (!myFeeds.length) {
+                activity.innerHTML = "<li>No activity yet.</li>";
+            } else {
+                myFeeds.slice(0, 5).forEach(feed => {
+                    const li = document.createElement("li");
+                    li.textContent = `Donation "${feed.title}" → ${feed.status}`;
+                    activity.appendChild(li);
+                });
+            }
+        }
 
     } catch (err) {
-        console.error(err);
+        console.error("Profile Error:", err);
     }
 }
 
+
+/* ================= ANIMATION ================= */
+
 function animateNumber(id, value) {
+
     const el = document.getElementById(id);
+    if (!el) return;
+
     let current = 0;
-    const step = Math.ceil(value / 20);
+    const step = Math.ceil(value / 20) || 1;
 
     const timer = setInterval(() => {
         current += step;
