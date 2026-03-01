@@ -7,20 +7,24 @@ const jwt = require("jsonwebtoken");
 ========================================================= */
 exports.register = async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({ message: "Request body missing" });
+    }
+
     const { name, email, password, role, type, location } = req.body;
 
-    // Check if user exists
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ message: "Required fields missing" });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
@@ -34,7 +38,8 @@ exports.register = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Register Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -44,28 +49,36 @@ exports.register = async (req, res) => {
 ========================================================= */
 exports.login = async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({ message: "Request body missing" });
+    }
+
     const { email, password } = req.body;
 
-    // Find user
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Create token
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "JWT secret not configured" });
+    }
+
     const token = jwt.sign(
-      { id: user._id },   // 🔥 important for middleware
+      { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    // Return safe user object (NO password)
     res.json({
       token,
       user: {
@@ -78,6 +91,7 @@ exports.login = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
