@@ -163,3 +163,48 @@ function animateNumber(id, value) {
     el.textContent = current;
   }, 30);
 }
+
+function showConnectionPanel(feed) {
+
+  let panel = document.getElementById("connectionPanel");
+
+  // Create panel if not exists
+  if (!panel) {
+    panel = document.createElement("div");
+    panel.id = "connectionPanel";
+    panel.style.marginTop = "30px";
+    panel.style.padding = "20px";
+    panel.style.borderRadius = "16px";
+    panel.style.background = "rgba(255,255,255,0.06)";
+    panel.style.border = "1px solid rgba(255,255,255,0.1)";
+    panel.style.backdropFilter = "blur(20px)";
+
+    document.querySelector(".feed-panel").appendChild(panel);
+  }
+
+  panel.innerHTML = `
+    <h3>Connection Request</h3>
+
+    <div style="margin-top:10px;">
+      <strong>${feed.title}</strong>
+      <p style="margin:8px 0;">
+        📍 ${feed.location}
+        <br>
+        🍽 ${feed.quantity} meals
+      </p>
+    </div>
+
+    <div style="margin-top:15px; display:flex; gap:10px;">
+      <button id="acceptBtn" class="btn primary">Accept</button>
+      <button id="rejectBtn" class="btn secondary">Reject</button>
+    </div>
+
+    <div id="statusLog" style="margin-top:15px;"></div>
+  `;
+
+  document.getElementById("acceptBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "accepted"));
+
+  document.getElementById("rejectBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "rejected"));
+}
