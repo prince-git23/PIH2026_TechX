@@ -1,4 +1,4 @@
-const API = "https://pih2026-techx.onrender.com/";
+const API = "https://pih2026-techx.onrender.com/api";
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
