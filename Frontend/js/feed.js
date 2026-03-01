@@ -12,7 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFeeds();
   loadDashboardStats();
 
-  document.getElementById("feedForm").addEventListener("submit", createFeed);
+  const form = document.getElementById("feedForm");
+  if (form) {
+    form.addEventListener("submit", createFeed);
+  }
 });
 
 /* =========================================================
@@ -20,15 +23,17 @@ document.addEventListener("DOMContentLoaded", () => {
 ========================================================= */
 async function loadDashboardStats() {
   try {
-    const res = await fetch(API, {
+    const res = await fetch(`${API}/feed`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    if (!res.ok) throw new Error("Failed to load feeds");
+
     const feeds = await res.json();
 
-    const myFeeds = feeds.filter(f => f.sender._id === userId);
+    const myFeeds = feeds.filter(f => f.sender?._id === userId);
 
-    const totalMeals = myFeeds.reduce((sum, f) => sum + f.quantity, 0);
+    const totalMeals = myFeeds.reduce((sum, f) => sum + (f.quantity || 0), 0);
     const acceptedFeeds = myFeeds.filter(f => f.status === "accepted");
 
     const successRate = myFeeds.length
@@ -63,7 +68,7 @@ async function createFeed(e) {
   };
 
   try {
-    const res = await fetch(API, {
+    const res = await fetch(`${API}/feed`, {   // ✅ FIXED
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +80,7 @@ async function createFeed(e) {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.message);
+      alert(data.message || "Failed to create feed");
       return;
     }
 
@@ -93,9 +98,11 @@ async function createFeed(e) {
 ========================================================= */
 async function loadFeeds() {
   try {
-    const res = await fetch(API, {
+    const res = await fetch(`${API}/feed`, {   // ✅ FIXED
       headers: { Authorization: `Bearer ${token}` }
     });
+
+    if (!res.ok) throw new Error("Failed to load feeds");
 
     const feeds = await res.json();
     const container = document.getElementById("feedContainer");
@@ -109,12 +116,12 @@ async function loadFeeds() {
         <h3>${feed.title}</h3>
         <div class="feed-meta">
           👤 ${feed.sender?.name || "Unknown"}
-          📍 ${feed.location}
-          🍽 ${feed.quantity} meals
+          📍 ${feed.location || ""}
+          🍽 ${feed.quantity || 0} meals
           ${feed.pickupTime ? `⏰ ${feed.pickupTime}` : ""}
-          • Status: ${feed.status}
+          • Status: ${feed.status || "pending"}
         </div>
-        <p>${feed.description}</p>
+        <p>${feed.description || ""}</p>
       `;
 
       container.appendChild(card);
@@ -130,8 +137,10 @@ async function loadFeeds() {
 ========================================================= */
 function animateNumber(id, value) {
   const el = document.getElementById(id);
+  if (!el) return;
+
   let current = 0;
-  const step = Math.ceil(value / 20);
+  const step = Math.ceil(value / 20) || 1;
 
   const timer = setInterval(() => {
     current += step;
