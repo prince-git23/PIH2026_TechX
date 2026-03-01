@@ -1,284 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Annsetu | Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annsetu | Profile</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-:root{
-    --primary:#6366f1;
-    --accent:#8b5cf6;
-    --bg:#0f172a;
-    --card:rgba(255,255,255,0.06);
-    --border:rgba(255,255,255,0.1);
-    --text:#f8fafc;
-    --muted:#94a3b8;
-}
+    <style>
+        :root {
+            --primary: #6366f1;
+            --accent: #8b5cf6;
+            --bg: #0f172a;
+            --card: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body{
-    font-family:'Inter',sans-serif;
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-    color:var(--text);
-    min-height:100vh;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    min-height: 100vh;
-    background-color: #0f172a; /* fallback */
-    overflow-x: hidden;
-}
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            min-height: 100vh;
+            background-color: #0f172a;
+            /* fallback */
+            overflow-x: hidden;
+        }
 
-/* Background Image Layer */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url("assets/bg.png") center/cover no-repeat;
-    opacity: 1; /* adjust this value */
-    z-index: -2;
-}
+        /* Background Image Layer */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: url("assets/bg.png") center/cover no-repeat;
+            opacity: 1;
+            /* adjust this value */
+            z-index: -2;
+        }
 
-/* Dark Overlay Layer (for better readability) */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(
-        rgba(15, 23, 42, 0.85),
-        rgba(15, 23, 42, 0.85)
-    );
-    z-index: -1;
-}
+        /* Dark Overlay Layer (for better readability) */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(15, 23, 42, 0.85),
+                    rgba(15, 23, 42, 0.85));
+            z-index: -1;
+        }
 
-/* NAVBAR */
-.top-nav{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:1.2rem 3rem;
-    border-bottom:1px solid var(--border);
-    background:rgba(255,255,255,0.03);
-    backdrop-filter:blur(12px);
-}
+        /* NAVBAR */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+        }
 
-.brand{
-    font-weight:700;
-    font-size:1.2rem;
-}
+        .brand {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
 
-.nav-links{
-    display:flex;
-    gap:2rem;
-}
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
 
-.nav-links a{
-    text-decoration:none;
-    color:var(--muted);
-    font-weight:500;
-    transition:0.3s;
-}
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 500;
+            transition: 0.3s;
+        }
 
-.nav-links a:hover,
-.nav-links a[aria-current="page"]{
-    color:white;
-}
+        .nav-links a:hover,
+        .nav-links a[aria-current="page"] {
+            color: white;
+        }
 
-.btn{
-    padding:0.6rem 1.2rem;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:transparent;
-    color:white;
-    cursor:pointer;
-    transition:0.3s;
-}
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-.btn.primary{
-    background:linear-gradient(90deg,#6366f1,#8b5cf6);
-    border:none;
-}
+        .btn.primary {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border: none;
+        }
 
-.btn.primary:hover{
-    transform:translateY(-3px);
-    box-shadow:0 15px 30px rgba(99,102,241,0.4);
-}
+        .btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+        }
 
-/* PAGE LAYOUT */
-.page-body{
-    max-width:1200px;
-    margin:auto;
-    padding:3rem 2rem;
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:2rem;
-}
+        /* PAGE LAYOUT */
+        .page-body {
+            max-width: 1200px;
+            margin: auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
 
-/* PROFILE CARD */
-.profile-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:2rem;
-    backdrop-filter:blur(20px);
-}
+        /* PROFILE CARD */
+        .profile-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
 
-.profile-card h1{
-    margin-bottom:0.5rem;
-}
+        .profile-card h1 {
+            margin-bottom: 0.5rem;
+        }
 
-/* FORM */
-form{
-    margin-top:1.5rem;
-    display:flex;
-    flex-direction:column;
-    gap:1rem;
-}
+        /* FORM */
+        form {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
 
-label{
-    display:flex;
-    flex-direction:column;
-    font-size:0.9rem;
-    gap:0.4rem;
-    color:var(--muted);
-}
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+            gap: 0.4rem;
+            color: var(--muted);
+        }
 
-input,select{
-    padding:0.9rem;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,0.05);
-    color:white;
-    font-size:0.95rem;
-}
+        input,
+        select {
+            padding: 0.9rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.95rem;
+        }
 
-input:focus,
-select:focus{
-    outline:none;
-    border-color:var(--primary);
-}
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
 
-.form-message{
-    font-size:0.9rem;
-    min-height:20px;
-}
+        .form-message {
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
 
-/* POLICY CARD */
-.policy-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:2rem;
-    backdrop-filter:blur(20px);
-}
+        /* POLICY CARD */
+        .policy-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
 
-.policy-card ul{
-    margin-top:1rem;
-    padding-left:1rem;
-    color:var(--muted);
-}
+        .policy-card ul {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            color: var(--muted);
+        }
 
-/* RESPONSIVE */
-@media(max-width:1000px){
-    .page-body{
-        grid-template-columns:1fr;
-    }
-}
-</style>
+        /* RESPONSIVE */
+        @media(max-width:1000px) {
+            .page-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== PREMIUM PROFILE EXTENSIONS ===== */
+
+        .profile-header-premium {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.25));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .profile-badge.verified {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+
+        .profile-badge.unverified {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-metrics {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-box {
+            padding: 1.2rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .metric-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .metric-box h3 {
+            font-size: 1.6rem;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Trust bar */
+        .trust-indicator {
+            margin-top: 2rem;
+        }
+
+        .trust-label {
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .trust-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        #trustProgress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.8s ease;
+        }
+
+        /* Activity */
+        .activity-timeline {
+            margin-top: 2rem;
+        }
+
+        .activity-timeline ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-timeline li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+    </style>
 </head>
 
 <body>
 
-<nav class="top-nav">
-    <div class="brand">Annsetu</div>
-    <div class="nav-links">
-        <a href="home.html">Feed</a>
-        <a href="connections.html">Connections</a>
-        <a href="messages.html">Messages</a>
-        <a href="profile.html" aria-current="page">Profile</a>
-        <a href="index.html">Logout</a>
-    </div>
-</nav>
+    <nav class="top-nav">
+        <div class="brand">Annsetu</div>
+        <div class="nav-links">
+            <a href="home.html">Feed</a>
+            <a href="connections.html">Connections</a>
+            <a href="messages.html">Messages</a>
+            <a href="profile.html" aria-current="page">Profile</a>
+            <a href="index.html">Logout</a>
+        </div>
+    </nav>
 
-<main class="page-body">
+    <main class="page-body">
 
-    <section class="profile-card">
-        <header>
-            <h1>Your Profile</h1>
-            <p>Manage organization details, preferences, and sponsorship visibility.</p>
-        </header>
+        <section class="profile-card">
+            <header>
+                <h1>Your Profile</h1>
+                <p>Manage organization details, preferences, and sponsorship visibility.</p>
+            </header>
+            <div class="profile-header-premium">
+                <div>
+                    <h2 id="premiumProfileName">Organization Name</h2>
+                    <p id="premiumRole" style="color:var(--muted); font-size:0.85rem;">Role</p>
+                </div>
+                <div id="verificationBadge" class="profile-badge unverified">
+                    Unverified
+                </div>
+            </div>
 
-        <form id="profileForm" novalidate>
+            <div class="profile-metrics">
+                <div class="metric-box">
+                    <h3 id="totalDonations">0</h3>
+                    <span>Total Donations</span>
+                </div>
+                <div class="metric-box">
+                    <h3 id="acceptedDonations">0</h3>
+                    <span>Accepted</span>
+                </div>
+                <div class="metric-box">
+                    <h3 id="reputationScore">0</h3>
+                    <span>Reputation</span>
+                </div>
+                <div class="metric-box">
+                    <h3 id="successRate">0%</h3>
+                    <span>Success Rate</span>
+                </div>
+            </div>
 
-            <label>
-                Name
-                <input type="text" id="profileName" required>
-            </label>
+            <form id="profileForm" novalidate>
 
-            <label>
-                Email
-                <input type="email" id="profileEmail" required>
-            </label>
+                <label>
+                    Name
+                    <input type="text" id="profileName" required>
+                </label>
 
-            <label>
-                Location
-                <input type="text" id="profileLocation" required>
-            </label>
+                <label>
+                    Email
+                    <input type="email" id="profileEmail" required>
+                </label>
 
-            <label>
-                Organization Type
-                <select id="profileType" required>
-                    <option value="">Select</option>
-                    <option value="hostel">Hostel</option>
-                    <option value="hotel">Hotel</option>
-                    <option value="ngo">NGO</option>
-                    <option value="lawn">Lawn</option>
-                </select>
-            </label>
+                <label>
+                    Location
+                    <input type="text" id="profileLocation" required>
+                </label>
 
-            <label>
-                Preferred Food Categories
-                <input type="text" id="profileCategories" placeholder="Vegetarian, Bakery, Ready-to-Eat">
-            </label>
+                <label>
+                    Organization Type
+                    <select id="profileType" required>
+                        <option value="">Select</option>
+                        <option value="hostel">Hostel</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="ngo">NGO</option>
+                        <option value="lawn">Lawn</option>
+                    </select>
+                </label>
 
-            <label>
-                Social Media Handles
-                <input type="text" id="profileSocial" placeholder="@instagram, @twitter">
-            </label>
+                <label>
+                    Preferred Food Categories
+                    <input type="text" id="profileCategories" placeholder="Vegetarian, Bakery, Ready-to-Eat">
+                </label>
 
-            <button type="submit" class="btn primary">Save Changes</button>
-            <p id="profileAlert" class="form-message"></p>
+                <label>
+                    Social Media Handles
+                    <input type="text" id="profileSocial" placeholder="@instagram, @twitter">
+                </label>
 
-        </form>
-    </section>
+                <button type="submit" class="btn primary">Save Changes</button>
+                <p id="profileAlert" class="form-message"></p>
 
-    <aside class="policy-card">
-        <h2>Rewards & Sponsorship</h2>
-        <p>
-            Profile data connects to your donation visibility score.
-            Higher engagement increases sponsorship eligibility.
-        </p>
-        <ul>
-            <li>Verified donors gain priority ranking</li>
-            <li>Active NGOs increase trust rating</li>
-            <li>Detailed location improves logistics matching</li>
-        </ul>
-    </aside>
+            </form>
+        </section>
 
-</main>
+        <aside class="policy-card">
+            <h2>Rewards & Sponsorship</h2>
+            <p>
+                Profile data connects to your donation visibility score.
+                Higher engagement increases sponsorship eligibility.
+            </p>
+            <ul>
+                <li>Verified donors gain priority ranking</li>
+                <li>Active NGOs increase trust rating</li>
+                <li>Detailed location improves logistics matching</li>
+            </ul>
+        </aside>
 
-<script type="module" src="js/profile.js"></script>
+    </main>
+
+    <script type="module" src="js/profile.js"></script>
 
 </body>
+
 </html>
