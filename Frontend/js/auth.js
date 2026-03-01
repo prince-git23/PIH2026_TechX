@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "https://pih2026-techx.onrender.com/";
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
