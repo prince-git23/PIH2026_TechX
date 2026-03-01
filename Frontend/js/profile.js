@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "https://pih2026-techx.onrender.com/i";
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId");
 
