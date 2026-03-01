@@ -57,7 +57,10 @@ if (loginForm) {
       if (!res.ok) throw new Error(data.message);
 
       localStorage.setItem("token", data.token);
-      window.location.href = "home.html";
+
+localStorage.setItem("userId", data.user._id);
+
+window.location.href = "home.html";
 
     } catch (err) {
       loginAlert.textContent = err.message;
