@@ -1,49 +1,100 @@
-const API = "http://localhost:5000/api";
-const token = localStorage.getItem("token");
-const feedContainer = document.getElementById("feedContainer");
+const BASE_URL = "http://localhost:5000/api/feed";
 
-if (!token) window.location.href = "index.html";
+document.addEventListener("DOMContentLoaded", () => {
+  loadFeeds();
+});
 
-const fetchFeeds = async () => {
-  const res = await fetch(`${API}/feed`, {
-    headers: { Authorization: token }
-  });
+// ================= CREATE POST =================
+document.getElementById("feedForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  const feeds = await res.json();
-  renderFeeds(feeds);
-};
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first.");
+    return;
+  }
 
-const renderFeeds = (feeds) => {
-  feedContainer.innerHTML = "";
+  const payload = {
+    title: document.getElementById("foodTitle").value.trim(),
+    location: document.getElementById("location").value.trim(),
+    description: document.getElementById("foodDescription").value.trim(),
+    quantity: document.getElementById("foodQuantity").value.trim(),
+    pickupTime: document.getElementById("pickupTime").value.trim()
+  };
 
-  feeds.forEach((item) => {
-    const article = document.createElement("article");
-    article.className = "feed-item";
+  try {
+    const res = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-    article.innerHTML = `
-      <h3>${item.sender?.name} → ${item.receiver?.name || "Unassigned"}</h3>
-      <p>Quantity: ${item.quantity}</p>
-      <p>Fresh Till: ${item.freshTill}</p>
-      <p>Status: ${item.status}</p>
-      <button onclick="updateStatus('${item._id}','accepted')">Accept</button>
-      <button onclick="updateStatus('${item._id}','rejected')">Reject</button>
-    `;
+    const data = await res.json();
 
-    feedContainer.appendChild(article);
-  });
-};
+    if (!res.ok) {
+      alert(data.message);
+      return;
+    }
 
-window.updateStatus = async (id, status) => {
-  await fetch(`${API}/feed/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token
-    },
-    body: JSON.stringify({ status })
-  });
+    document.getElementById("feedForm").reset();
 
-  fetchFeeds();
-};
+    // reload feed after posting
+    loadFeeds();
 
-fetchFeeds();
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+});
+
+
+// ================= LOAD FEEDS =================
+async function loadFeeds() {
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(BASE_URL, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const feeds = await res.json();
+    const container = document.getElementById("feedContainer");
+    container.innerHTML = "";
+
+    feeds.forEach(feed => {
+
+      const card = document.createElement("div");
+      card.className = "feed-item";
+      card.style.cursor = "pointer"; // make it clickable
+
+      card.innerHTML = `
+        <h3>${feed.title}</h3>
+        <div class="feed-meta">
+            👤 ${feed.sender?.name}
+            📍 ${feed.location}
+            🍽 ${feed.quantity} meals
+            ${feed.pickupTime ? `⏰ ${feed.pickupTime}` : ""}
+        </div>
+        <p>${feed.description}</p>
+      `;
+
+      // 👇 CLICK REDIRECT LOGIC
+      card.addEventListener("click", () => {
+        localStorage.setItem("selectedFeedId", feed._id);
+        window.location.href = "connections.html";
+      });
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+}
