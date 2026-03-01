@@ -1,25 +1,110 @@
-const API = "http://localhost:5000/api";
-const token = localStorage.getItem("token");
-const connectionsList = document.getElementById("connectionsList");
+const BASE_URL = "http://localhost:5000/api/feed";
 
-const fetchConnections = async () => {
-  const res = await fetch(`${API}/connections`, {
-    headers: { Authorization: token }
-  });
+document.addEventListener("DOMContentLoaded", async () => {
 
-  const connections = await res.json();
-  connectionsList.innerHTML = "";
+  const token = localStorage.getItem("token");
+  const feedId = localStorage.getItem("selectedFeedId");
 
-  connections.forEach((conn) => {
-    const card = document.createElement("div");
-    card.className = "connection-card";
-    card.innerHTML = `
-      <h3>${conn.name}</h3>
-      <p>${conn.location}</p>
-      <p>Status: ${conn.status}</p>
+  if (!token || !feedId) {
+    console.log("Missing token or feed ID");
+    return;
+  }
+
+  try {
+
+    const res = await fetch(`${BASE_URL}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const feeds = await res.json();
+    const feed = feeds.find(f => f._id === feedId);
+
+    if (!feed) {
+      console.log("Feed not found");
+      return;
+    }
+
+    renderFeedDetails(feed);
+
+  } catch (error) {
+    console.error(error);
+  }
+
+});
+
+
+function renderFeedDetails(feed) {
+
+  const container = document.querySelector(".connections-container");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="feed-item">
+      <h3>${feed.title}</h3>
+
+      <div class="feed-meta">
+        👤 ${feed.sender?.name || "Unknown Sender"}
+        📍 ${feed.location}
+        🍽 ${feed.quantity} meals
+        ${feed.pickupTime ? `⏰ ${feed.pickupTime}` : ""}
+      </div>
+
+      <p>${feed.description}</p>
+
+      <div class="feed-actions" style="margin-top:15px; display:flex; gap:12px;">
+        <button class="btn primary" id="acceptBtn">
+          Accept
+        </button>
+        <button class="btn secondary" id="rejectBtn">
+          Reject
+        </button>
+      </div>
+
+      <div id="statusLog" style="margin-top:15px;"></div>
+
+    </div>
+  `;
+
+  // Attach events AFTER rendering
+  document.getElementById("acceptBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "accepted"));
+
+  document.getElementById("rejectBtn")
+    .addEventListener("click", () => updateStatus(feed._id, "rejected"));
+}
+
+
+async function updateStatus(feedId, status) {
+
+  const token = localStorage.getItem("token");
+
+  try {
+
+    const res = await fetch(`${BASE_URL}/${feedId}/status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Error updating status");
+      return;
+    }
+
+    document.getElementById("statusLog").innerHTML = `
+      <div style="color:${status === "accepted" ? "#22c55e" : "#ef4444"};">
+        ✔ Feed ${status}
+      </div>
     `;
-    connectionsList.appendChild(card);
-  });
-};
 
-fetchConnections();
+  } catch (error) {
+    console.error(error);
+  }
+}
