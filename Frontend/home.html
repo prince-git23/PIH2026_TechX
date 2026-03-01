@@ -1,279 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FeedLink | Feed Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annsetu | Feed Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --accent: #8b5cf6;
+            --bg: #0f172a;
+            --card: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
 
-<style>
-:root{
-    --primary:#6366f1;
-    --accent:#8b5cf6;
-    --bg:#0f172a;
-    --card:rgba(255,255,255,0.06);
-    --border:rgba(255,255,255,0.1);
-    --text:#f8fafc;
-    --muted:#94a3b8;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body {
+            margin: 0;
+            position: relative;
+            min-height: 100vh;
+            background-color: #0f172a;
+            /* fallback */
+            overflow-x: hidden;
+        }
+
+
+
+        /* Background Image Layer */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: url("assets/bg.png") center/cover no-repeat;
+            opacity: 1;
+            /* adjust this value */
+            z-index: -2;
+        }
+
+        /* Dark Overlay Layer (for better readability) */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(15, 23, 42, 0.85),
+                    rgba(15, 23, 42, 0.85));
+            z-index: -1;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a[aria-current="page"] {
+            color: white;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* PAGE LAYOUT */
+        .page-body {
+            max-width: 1200px;
+            margin: auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* METRICS */
+        .metrics {
+            grid-column: 1/3;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .metric-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* FEED PANEL */
+        .feed-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .feed-panel h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* FEED ITEMS (rendered by JS) */
+        .feed-item {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            transition: 0.3s;
+        }
+
+        .feed-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .feed-meta {
+            margin: 0.7rem 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .feed-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn.primary {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border: none;
+        }
+
+        .btn.secondary {
+            background: transparent;
+        }
+
+        /* POLICY CARD */
+        .policy-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .policy-card ul {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            color: var(--muted);
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1000px) {
+            .page-body {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* ===== Premium Feed Addon ===== */
+
+.premium-feed-addon {
+    margin-top: 40px;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    font-family:'Inter',sans-serif;
-    background:linear-gradient(135deg,#0f172a,#1e293b);
-    color:var(--text);
-    min-height:100vh;
-}
-
-body {
+.premium-feed-header h2 {
     margin: 0;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    min-height: 100vh;
-    background-color: #0f172a; /* fallback */
-    overflow-x: hidden;
+    font-size: 1.6rem;
+    font-weight: 600;
 }
 
-/* Background Image Layer */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url("assets/bg.png") center/cover no-repeat;
-    opacity: 1; /* adjust this value */
-    z-index: -2;
+.premium-feed-header p {
+    margin-top: 6px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
 }
 
-/* Dark Overlay Layer (for better readability) */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(
-        rgba(15, 23, 42, 0.85),
-        rgba(15, 23, 42, 0.85)
-    );
-    z-index: -1;
+.premium-feed-form {
+    margin-top: 20px;
 }
 
-/* NAVBAR */
-.top-nav{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:1.2rem 3rem;
-    border-bottom:1px solid var(--border);
-    background:rgba(255,255,255,0.03);
-    backdrop-filter:blur(12px);
+.premium-field {
+    margin-bottom: 20px;
 }
 
-.brand{
-    font-weight:700;
-    font-size:1.2rem;
+.premium-field label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: rgba(255,255,255,0.7);
 }
 
-.nav-links{
-    display:flex;
-    gap:2rem;
+.premium-feed-form input,
+.premium-feed-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 0.9rem;
 }
 
-.nav-links a{
-    text-decoration:none;
-    color:var(--muted);
-    font-weight:500;
-    transition:0.3s;
+.premium-feed-form input:focus,
+.premium-feed-form textarea:focus {
+    outline: none;
+    border-color: #a855f7;
 }
 
-.nav-links a:hover,
-.nav-links a[aria-current="page"]{
-    color:white;
+.premium-feed-form textarea {
+    min-height: 100px;
+    resize: none;
 }
 
-.btn{
-    padding:0.5rem 1rem;
-    border-radius:8px;
-    border:1px solid var(--border);
-    background:transparent;
-    color:white;
-    cursor:pointer;
+.premium-row {
+    display: flex;
+    gap: 20px;
 }
 
-/* PAGE LAYOUT */
-.page-body{
-    max-width:1200px;
-    margin:auto;
-    padding:3rem 2rem;
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:2rem;
+.premium-post-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(90deg, #7c3aed, #c084fc);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
 }
 
-/* METRICS */
-.metrics{
-    grid-column:1/3;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:1.5rem;
-    margin-bottom:1.5rem;
+.premium-post-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(168,85,247,0.4);
 }
-
-.metric-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:2rem;
-    backdrop-filter:blur(20px);
-    text-align:center;
-    transition:0.3s;
-}
-
-.metric-card:hover{
-    transform:translateY(-5px);
-    box-shadow:0 20px 40px rgba(0,0,0,0.4);
-}
-
-.metric-card h3{
-    font-size:2rem;
-    margin-bottom:0.5rem;
-}
-
-/* FEED PANEL */
-.feed-panel{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:2rem;
-    backdrop-filter:blur(20px);
-}
-
-.feed-panel h1{
-    margin-bottom:0.5rem;
-}
-
-/* FEED ITEMS (rendered by JS) */
-.feed-item{
-    margin-top:1.5rem;
-    padding:1.5rem;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,0.04);
-    transition:0.3s;
-}
-
-.feed-item:hover{
-    transform:translateY(-4px);
-    box-shadow:0 15px 35px rgba(0,0,0,0.4);
-}
-
-.feed-meta{
-    margin:0.7rem 0;
-    color:var(--muted);
-    font-size:0.9rem;
-    display:flex;
-    flex-wrap:wrap;
-    gap:1rem;
-}
-
-.feed-actions{
-    margin-top:1rem;
-    display:flex;
-    gap:1rem;
-    align-items:center;
-}
-
-.btn.primary{
-    background:linear-gradient(90deg,#6366f1,#8b5cf6);
-    border:none;
-}
-
-.btn.secondary{
-    background:transparent;
-}
-
-/* POLICY CARD */
-.policy-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:2rem;
-    backdrop-filter:blur(20px);
-}
-
-.policy-card ul{
-    margin-top:1rem;
-    padding-left:1rem;
-    color:var(--muted);
-}
-
-/* RESPONSIVE */
-@media(max-width:1000px){
-    .page-body{
-        grid-template-columns:1fr;
-    }
-}
-</style>
+    </style>
 </head>
 
 <body>
 
-<nav class="top-nav">
-    <div class="brand">Annsetu</div>
-    <div class="nav-links">
-        <a href="home.html" aria-current="page">Feed</a>
-        <a href="connections.html">Connections</a>
-        <a href="messages.html">Messages</a>
-        <a href="profile.html">Profile</a>
-        <a href="index.html">Logout</a>
-    </div>
-</nav>
-
-<main class="page-body">
-
-    <section class="metrics">
-        <div class="metric-card">
-            <h3 id="totalMeals">0</h3>
-            <p>Total Meals Shared</p>
+    <nav class="top-nav">
+        <div class="brand">Annsetu</div>
+        <div class="nav-links">
+            <a href="home.html" aria-current="page">Feed</a>
+            <a href="connections.html">Connections</a>
+            <a href="messages.html">Messages</a>
+            <a href="profile.html">Profile</a>
+            <a href="index.html">Logout</a>
         </div>
-        <div class="metric-card">
-            <h3 id="activePartners">0</h3>
-            <p>Active Partners</p>
+    </nav>
+
+    <main class="page-body">
+
+        <section class="metrics">
+            <div class="metric-card">
+                <h3 id="totalMeals">0</h3>
+                <p>Total Meals Shared</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="activePartners">0</h3>
+                <p>Active Partners</p>
+            </div>
+            <div class="metric-card">
+                <h3 id="successRate">0%</h3>
+                <p>Success Rate</p>
+            </div>
+        </section>
+
+        <section class="feed-panel">
+            <header>
+                <h1>Live Feed</h1>
+                <p>Monitor donations and coordinate acceptance in real time.</p>
+            </header>
+            <div id="feedContainer" class="feed-list"></div>
+
+        </section>
+
+        <!-- ===== Premium Create Feed Addon (No Layout Change) ===== -->
+
+        <div class="premium-feed-addon">
+            <div class="premium-feed-header">
+                <h2>Create Donation Post</h2>
+                <p>Share surplus food availability with verified partners instantly.</p>
+            </div>
+
+            <form id="feedForm" class="premium-feed-form">
+                <div class="premium-field">
+                    <label>Food Title</label>
+                    <input type="text" id="foodTitle" placeholder="e.g. Veg Biryani" required>
+                </div>
+
+                <div class="premium-field">
+                    <label>Location</label>
+                    <input type="text" id="location" placeholder="e.g. Near MIDC,Nagpur" required>
+                </div>
+
+                <div class="premium-field">
+                    <label>Description</label>
+                    <textarea id="foodDescription" placeholder="Freshly prepared at 6 PM. Available for pickup."
+                        required></textarea>
+                </div>
+
+                <div class="premium-row">
+                    <div class="premium-field">
+                        <label>Quantity</label>
+                        <input type="number" id="foodQuantity" placeholder="Number of meals" required>
+                    </div>
+
+                    <div class="premium-field">
+                        <label>Pickup Time</label>
+                        <input type="text" id="pickupTime" placeholder="e.g. 7:00 PM - 9:00 PM">
+                    </div>
+                </div>
+
+                <button type="submit" class="premium-post-btn">
+                    Publish Donation
+                </button>
+            </form>
         </div>
-        <div class="metric-card">
-            <h3 id="successRate">0%</h3>
-            <p>Success Rate</p>
-        </div>
-    </section>
 
-    <section class="feed-panel">
-        <header>
-            <h1>Live Feed</h1>
-            <p>Monitor donations and coordinate acceptance in real time.</p>
-        </header>
-        <div id="feedContainer" class="feed-list"></div>
-    </section>
+        <aside class="policy-card">
+            <h2>Government & Sponsor Visibility</h2>
+            <p>
+                Each accepted meal boosts your verified contribution metrics.
+                Sponsorship views unlock reward eligibility.
+            </p>
+            <ul>
+                <li>Compliance tracking enabled</li>
+                <li>Transparent acceptance logs</li>
+                <li>Freshness monitoring integrated</li>
+            </ul>
+        </aside>
 
-    <aside class="policy-card">
-        <h2>Government & Sponsor Visibility</h2>
-        <p>
-            Each accepted meal boosts your verified contribution metrics.
-            Sponsorship views unlock reward eligibility.
-        </p>
-        <ul>
-            <li>Compliance tracking enabled</li>
-            <li>Transparent acceptance logs</li>
-            <li>Freshness monitoring integrated</li>
-        </ul>
-    </aside>
 
-</main>
 
-<script type="module" src="js/feed.js"></script>
+    </main>
+
+    <script type="module" src="js/feed.js"></script>
 
 </body>
+
 </html>
