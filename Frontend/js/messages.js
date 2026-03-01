@@ -1,51 +1,78 @@
-const BASE_URL = "https://pih2026-techx.onrender.com/api";
+const BASE_URL = "https://pih2026-techx.onrender.com/api/messages";
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "index.html";
+    return;
+  }
+
   loadConversations();
 
-  document.getElementById("backBtn").addEventListener("click", () => {
-    document.getElementById("chatSection").style.display = "none";
-    document.getElementById("conversationsContainer").style.display = "block";
-  });
+  const backBtn = document.getElementById("backBtn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      document.getElementById("chatSection").style.display = "none";
+      document.getElementById("conversationsContainer").style.display = "block";
+    });
+  }
 
-  document.getElementById("sendBtn").addEventListener("click", sendMessage);
+  const sendBtn = document.getElementById("sendBtn");
+  if (sendBtn) {
+    sendBtn.addEventListener("click", sendMessage);
+  }
 });
 
 
-// ================= LOAD CONVERSATIONS =================
+/* ================= LOAD CONVERSATIONS ================= */
 async function loadConversations() {
 
   const token = localStorage.getItem("token");
-  if (!token) return;
 
-  const res = await fetch(`${BASE_URL}/conversations`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  try {
 
-  const users = await res.json();
-  const container = document.getElementById("conversationsContainer");
-  container.innerHTML = "";
+    const res = await fetch(`${BASE_URL}/conversations`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  users.forEach(user => {
+    if (!res.ok) throw new Error("Failed to load conversations");
 
-    const div = document.createElement("div");
-    div.className = "message-thread";
+    const users = await res.json();
+    const container = document.getElementById("conversationsContainer");
+    container.innerHTML = "";
 
-    div.innerHTML = `
-      <strong>${user.name}</strong>
-      <div class="message-meta">
-        ${user.role === "sender" ? "Donor" : "NGO"}
-      </div>
-    `;
+    if (!users.length) {
+      container.innerHTML = "<p style='opacity:0.6'>No conversations yet.</p>";
+      return;
+    }
 
-    div.addEventListener("click", () => openChat(user));
+    users.forEach(user => {
 
-    container.appendChild(div);
-  });
+      const div = document.createElement("div");
+      div.className = "message-thread";
+
+      div.innerHTML = `
+        <strong>${user.name}</strong>
+        <div class="message-meta">
+          ${user.role === "sender" ? "Donor" : "NGO"}
+        </div>
+      `;
+
+      div.addEventListener("click", () => openChat(user));
+
+      container.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error("Conversation Load Error:", err);
+  }
 }
 
 
-// ================= OPEN CHAT =================
+/* ================= OPEN CHAT ================= */
 function openChat(user) {
 
   document.getElementById("chatPartnerName").textContent = user.name;
@@ -59,45 +86,55 @@ function openChat(user) {
 }
 
 
-// ================= LOAD MESSAGES =================
+/* ================= LOAD MESSAGES ================= */
 async function loadMessages(userId) {
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/conversation/${userId}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  try {
 
-  const messages = await res.json();
-  const chatWindow = document.getElementById("chatWindow");
-  chatWindow.innerHTML = "";
+    const res = await fetch(`${BASE_URL}/conversation/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  messages.forEach(msg => {
+    if (!res.ok) throw new Error("Failed to load messages");
 
-    const bubble = document.createElement("div");
+    const messages = await res.json();
+    const chatWindow = document.getElementById("chatWindow");
+    chatWindow.innerHTML = "";
 
-    const isMe = msg.sender._id === getMyId();
+    const myId = getMyId();
 
-    bubble.className = "chat-bubble " + (isMe ? "me" : "other");
+    messages.forEach(msg => {
 
-bubble.innerHTML = `
-  <div style="font-weight:600; font-size:0.75rem; margin-bottom:4px; opacity:0.8;">
-    ${isMe ? "You" : msg.sender.name}
-  </div>
-  <div>${msg.content}</div>
-  <div class="timestamp">
-    ${new Date(msg.createdAt).toLocaleString()}
-  </div>
-`;
+      const bubble = document.createElement("div");
 
-    chatWindow.appendChild(bubble);
-  });
+      const isMe = msg.sender._id === myId;
 
-  chatWindow.scrollTop = chatWindow.scrollHeight;
+      bubble.className = "chat-bubble " + (isMe ? "me" : "other");
+
+      bubble.innerHTML = `
+        <div style="font-weight:600; font-size:0.75rem; margin-bottom:4px; opacity:0.8;">
+          ${isMe ? "You" : msg.sender.name}
+        </div>
+        <div>${msg.content}</div>
+        <div class="timestamp">
+          ${new Date(msg.createdAt).toLocaleString()}
+        </div>
+      `;
+
+      chatWindow.appendChild(bubble);
+    });
+
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  } catch (err) {
+    console.error("Load Messages Error:", err);
+  }
 }
 
 
-// ================= SEND MESSAGE =================
+/* ================= SEND MESSAGE ================= */
 async function sendMessage() {
 
   const token = localStorage.getItem("token");
@@ -106,29 +143,41 @@ async function sendMessage() {
 
   if (!content) return;
 
-  await fetch(`${BASE_URL}/send`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      receiver: receiverId,
-      content
-    })
-  });
+  try {
 
-  document.getElementById("chatMessage").value = "";
+    const res = await fetch(`${BASE_URL}/send`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        receiver: receiverId,
+        content
+      })
+    });
 
-  loadMessages(receiverId);
+    if (!res.ok) throw new Error("Failed to send message");
+
+    document.getElementById("chatMessage").value = "";
+    loadMessages(receiverId);
+
+  } catch (err) {
+    console.error("Send Message Error:", err);
+  }
 }
 
 
-// ================= GET LOGGED IN USER ID =================
+/* ================= GET LOGGED IN USER ID ================= */
 function getMyId() {
+
   const token = localStorage.getItem("token");
   if (!token) return null;
 
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.id;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.id;
+  } catch {
+    return null;
+  }
 }
