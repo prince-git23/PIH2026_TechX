@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/feed";
+const BASE_URL = "https://pih2026-techx.onrender.com/";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
