@@ -60,7 +60,7 @@ if (loginForm) {
 
 localStorage.setItem("userId", data.user._id);
 
-window.location.href = "home.html";
+window.location.href = "/home.html";
 
     } catch (err) {
       loginAlert.textContent = err.message;
