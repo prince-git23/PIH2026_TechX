@@ -46,7 +46,9 @@ async function loadDashboardStats() {
 
     animateNumber("totalMeals", totalMeals);
     animateNumber("activePartners", partnerIds.size);
-    document.getElementById("successRate").textContent = successRate + "%";
+
+    const rateEl = document.getElementById("successRate");
+    if (rateEl) rateEl.textContent = successRate + "%";
 
   } catch (err) {
     console.error("Dashboard Error:", err);
@@ -68,7 +70,7 @@ async function createFeed(e) {
   };
 
   try {
-    const res = await fetch(`${API}/feed`, {   // ✅ FIXED
+    const res = await fetch(`${API}/feed`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +99,6 @@ async function createFeed(e) {
    LOAD FEEDS
 ========================================================= */
 async function loadFeeds() {
-
   try {
     const res = await fetch(`${API}/feed`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -113,7 +114,7 @@ async function loadFeeds() {
 
       const card = document.createElement("div");
       card.className = "feed-item";
-      card.style.cursor = "pointer"; // 👈 important
+      card.style.cursor = "pointer";
 
       card.innerHTML = `
         <h3>${feed.title}</h3>
@@ -127,22 +128,17 @@ async function loadFeeds() {
         <p>${feed.description || ""}</p>
       `;
 
-      // ✅ CLICK EVENT INSIDE LOOP
+      // CLICK REDIRECT
       card.addEventListener("click", () => {
         localStorage.setItem("selectedFeedId", feed._id);
+        console.log("Redirecting:", feed._id);
 
-        console.log("Redirecting to connections with:", feed._id);
-
-        window.location.href = "/connections.html"; 
+        window.location.href = "/connections.html";
       });
 
       container.appendChild(card);
     });
 
-  } catch (err) {
-    console.error("Load Feed Error:", err);
-  }
-}
   } catch (err) {
     console.error("Load Feed Error:", err);
   }
