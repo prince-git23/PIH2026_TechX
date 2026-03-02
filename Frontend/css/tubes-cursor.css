@@ -1,0 +1,35 @@
+/*
+  Tubes Cursor (WebGL/WebGPU) integration overlay.
+
+  Upstream effect: CodePen by soju22 (see project zip README).
+  Script is licensed CC BY-NC-SA 4.0 (Non-Commercial). Do not use commercially.
+*/
+
+#cursorCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+
+  /* Keep it subtle so it doesn't fight the UI */
+  opacity: 0.28;
+}
+
+/* Keep app content above the canvas without editing every layout block */
+body {
+  position: relative;
+}
+
+body > :not(#cursorCanvas) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cursorCanvas {
+    display: none;
+  }
+}
+
