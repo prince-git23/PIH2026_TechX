@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Annsetu | Messages</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,6 +20,8 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
+
+html{ -webkit-text-size-adjust:100%; }
 
 body{
     font-family:'Inter',sans-serif;
@@ -57,7 +59,22 @@ body::after{
     backdrop-filter:blur(12px);
 }
 
-.brand{font-weight:700;font-size:1.2rem;}
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-weight:700;
+    font-size:1.2rem;
+    white-space:nowrap;
+}
+
+.brand-logo{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+    border-radius:999px;
+    flex:0 0 auto;
+}
 
 .nav-links{display:flex;gap:2rem;}
 
@@ -113,7 +130,8 @@ body::after{
 
 /* CHAT */
 #chatWindow{
-    height:350px;
+    height:55vh;
+    max-height:420px;
     overflow-y:auto;
     padding:20px;
     border-radius:18px;
@@ -196,6 +214,22 @@ body::after{
     box-shadow:0 10px 25px rgba(99,102,241,0.4);
 }
 
+.btn-back{
+    padding:10px 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.05);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-back:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(99,102,241,0.25);
+}
+
 /* SIDE CARD */
 .policy-card{
     background:var(--card);
@@ -214,6 +248,23 @@ body::after{
 @media(max-width:1000px){
     .page-body{grid-template-columns:1fr;}
 }
+
+@media(max-width:720px){
+    .top-nav{padding:1rem 1.25rem; gap:0.75rem; flex-wrap:wrap;}
+    .nav-links{gap:0.85rem; flex-wrap:wrap; justify-content:flex-start;}
+    .page-body{padding:1.75rem 1.25rem;}
+    .messages-panel,.policy-card{padding:1.25rem; border-radius:18px;}
+}
+
+@media(max-width:480px){
+    .page-body{padding:1.25rem 0.9rem;}
+    .nav-links{width:100%;}
+    #chatWindow{height:58vh; padding:14px;}
+    .chat-bubble{max-width:88%;}
+    .chat-input{flex-direction:column; align-items:stretch;}
+    .chat-input textarea{font-size:16px;}
+    .chat-input button{width:100%;}
+}
 </style>
 </head>
 
@@ -221,7 +272,10 @@ body::after{
 <canvas id="cursorCanvas" aria-hidden="true"></canvas>
 
 <nav class="top-nav">
-    <div class="brand">Annsetu</div>
+    <div class="brand">
+        <img src="assets/logo.png" alt="Annsetu Logo" class="brand-logo">
+        Annsetu
+    </div>
     <div class="nav-links">
         <a href="home.html">Feed</a>
         <a href="connections.html">Connections</a>
@@ -248,7 +302,7 @@ body::after{
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 id="chatPartnerName"></h3>
-        <button id="backBtn" class="chat-input button">Back</button>
+        <button id="backBtn" type="button" class="btn-back">Back</button>
     </div>
 
     <div id="chatWindow"></div>
