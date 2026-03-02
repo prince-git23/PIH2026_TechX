@@ -2,6 +2,13 @@ const API = "https://pih2026-techx.onrender.com/api";
 
 document.addEventListener("DOMContentLoaded", initProfile);
 
+function getId(maybeDoc) {
+    if (!maybeDoc) return null;
+    if (typeof maybeDoc === "string") return maybeDoc;
+    if (typeof maybeDoc === "object") return maybeDoc._id || maybeDoc.id || null;
+    return null;
+}
+
 async function initProfile() {
 
     const token = localStorage.getItem("token");
@@ -28,6 +35,7 @@ async function initProfile() {
 
         // Save userId properly (FIX)
         const userId = user._id;
+        if (userId) localStorage.setItem("userId", userId);
 
         document.getElementById("premiumProfileName").textContent = user.name || "User";
         document.getElementById("premiumRole").textContent = (user.role || "").toUpperCase();
@@ -53,8 +61,12 @@ async function initProfile() {
 
         const feeds = await resFeeds.json();
 
-        // FIXED filter
-        const myFeeds = feeds.filter(f => f.sender?._id === userId);
+        if (!Array.isArray(feeds)) {
+            throw new Error("Unexpected feeds response");
+        }
+
+        // Sender can be populated (object) or a raw id string depending on backend/query.
+        const myFeeds = feeds.filter(f => String(getId(f.sender)) === String(userId));
 
         const total = myFeeds.length;
         const accepted = myFeeds.filter(f => f.status === "accepted").length;

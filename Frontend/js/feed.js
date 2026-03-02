@@ -1,8 +1,14 @@
 const API = "https://pih2026-techx.onrender.com/api/feed";
-const token = localStorage.getItem("token");
-const userId = localStorage.getItem("userId");
+
+function getId(maybeDoc) {
+  if (!maybeDoc) return null;
+  if (typeof maybeDoc === "string") return maybeDoc;
+  if (typeof maybeDoc === "object") return maybeDoc._id || maybeDoc.id || null;
+  return null;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
   if (!token) {
     alert("Please login first");
     window.location.href = "index.html";
@@ -19,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
    LOAD DASHBOARD METRICS
 ========================================================= */
 async function loadDashboardStats() {
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+
   try {
     const res = await fetch(API, {
       headers: { Authorization: `Bearer ${token}` }
@@ -26,9 +35,17 @@ async function loadDashboardStats() {
 
     const feeds = await res.json();
 
-    const myFeeds = feeds.filter(f => f.sender._id === userId);
+    if (!res.ok) {
+      throw new Error(feeds?.message || "Failed to load feeds");
+    }
 
-    const totalMeals = myFeeds.reduce((sum, f) => sum + f.quantity, 0);
+    if (!Array.isArray(feeds)) {
+      throw new Error("Unexpected feeds response");
+    }
+
+    const myFeeds = feeds.filter(f => String(getId(f.sender)) === String(userId));
+
+    const totalMeals = myFeeds.reduce((sum, f) => sum + Number(f.quantity || 0), 0);
     const acceptedFeeds = myFeeds.filter(f => f.status === "accepted");
 
     const successRate = myFeeds.length
@@ -36,12 +53,16 @@ async function loadDashboardStats() {
       : 0;
 
     const partnerIds = new Set(
-      acceptedFeeds.map(f => f.acceptedBy?._id).filter(Boolean)
+      acceptedFeeds
+        .map(f => getId(f.acceptedBy))
+        .filter(Boolean)
+        .map(String)
     );
 
     animateNumber("totalMeals", totalMeals);
     animateNumber("activePartners", partnerIds.size);
-    document.getElementById("successRate").textContent = successRate + "%";
+    const sr = document.getElementById("successRate");
+    if (sr) sr.textContent = successRate + "%";
 
   } catch (err) {
     console.error("Dashboard Error:", err);
@@ -53,6 +74,8 @@ async function loadDashboardStats() {
 ========================================================= */
 async function createFeed(e) {
   e.preventDefault();
+
+  const token = localStorage.getItem("token");
 
   const payload = {
     title: document.getElementById("foodTitle").value.trim(),
@@ -92,12 +115,23 @@ async function createFeed(e) {
    LOAD FEEDS
 ========================================================= */
 async function loadFeeds() {
+  const token = localStorage.getItem("token");
+
   try {
     const res = await fetch(API, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     const feeds = await res.json();
+
+    if (!res.ok) {
+      throw new Error(feeds?.message || "Failed to load feeds");
+    }
+
+    if (!Array.isArray(feeds)) {
+      throw new Error("Unexpected feeds response");
+    }
+
     const container = document.getElementById("feedContainer");
     container.innerHTML = "";
 
@@ -138,6 +172,7 @@ async function loadFeeds() {
 ========================================================= */
 function animateNumber(id, value) {
   const el = document.getElementById(id);
+  if (!el) return;
   let current = 0;
   const step = Math.ceil(value / 20);
 
