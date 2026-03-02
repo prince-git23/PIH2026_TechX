@@ -117,6 +117,13 @@ async function loadFeeds() {
         <p>${feed.description}</p>
       `;
 
+      // Add click event to redirect to connections.html
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => {
+        localStorage.setItem("selectedFeedId", feed._id);
+        window.location.href = "connections.html";
+      });
+
       container.appendChild(card);
     });
 
