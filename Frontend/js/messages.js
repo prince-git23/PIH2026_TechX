@@ -103,23 +103,38 @@ async function loadMessages(userId) {
     const chatWindow = document.getElementById("chatWindow");
     chatWindow.innerHTML = "";
 
-    const myId = getMyId();
+    // Prefer JWT `id`, but fall back to the `userId` we store at login.
+    const myId = getMyId() || localStorage.getItem("userId");
 
     messages.forEach(msg => {
+      // Backend usually returns `sender` populated, but handle non-populated cases too.
+      const senderId =
+        (msg && msg.sender && typeof msg.sender === "object" && (msg.sender._id || msg.sender.id)) ||
+        (msg ? msg.sender : null);
+
+      const isMe =
+        myId != null &&
+        senderId != null &&
+        String(senderId) === String(myId);
+
+      const senderName =
+        msg && msg.sender && typeof msg.sender === "object" && msg.sender.name
+          ? msg.sender.name
+          : "Unknown";
+
+      const senderLabel = isMe ? "You" : senderName;
 
       const bubble = document.createElement("div");
-
-      const isMe = msg.sender._id === myId;
 
       bubble.className = "chat-bubble " + (isMe ? "me" : "other");
 
       bubble.innerHTML = `
         <div style="font-weight:600; font-size:0.75rem; margin-bottom:4px; opacity:0.8;">
-          ${isMe ? "You" : msg.sender.name}
+          ${senderLabel}
         </div>
-        <div>${msg.content}</div>
+        <div>${msg.content ?? ""}</div>
         <div class="timestamp">
-          ${new Date(msg.createdAt).toLocaleString()}
+          ${msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ""}
         </div>
       `;
 
@@ -175,8 +190,15 @@ function getMyId() {
   if (!token) return null;
 
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.id;
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return null;
+
+    // JWT uses base64url encoding (not plain base64). `atob` needs standard base64.
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+
+    const payload = JSON.parse(atob(padded));
+    return payload.id ?? null;
   } catch {
     return null;
   }

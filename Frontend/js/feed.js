@@ -108,7 +108,8 @@ async function loadFeeds() {
       card.innerHTML = `
         <h3>${feed.title}</h3>
         <div class="feed-meta">
-          👤 ${feed.sender?.name || "Unknown"}
+          👤 Donor: ${feed.sender?.name || "Unknown"}
+          🤝 Accepted By: ${feed.acceptedBy?.name || "Not yet accepted"}
           📍 ${feed.location}
           🍽 ${feed.quantity} meals
           ${feed.pickupTime ? `⏰ ${feed.pickupTime}` : ""}
